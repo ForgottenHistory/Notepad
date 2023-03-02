@@ -8,11 +8,8 @@ class NotepadApp:
     def __init__(self, master):
         
         self.master = master
+        self.master.option_add("*Font", "Arial 18")
         self.master.title("Notepad App")
-        
-        # Set the default font for the app
-        default_font = tkFont.nametofont("TkDefaultFont")
-        default_font.configure(family="Arial", size=12)
         
         # Create the tab widget
         self.tabs = ttk.Notebook(self.master)
@@ -45,10 +42,16 @@ class NotepadApp:
 
         # Set the menu bar
         self.master.config(menu=self.menu_bar)
+        
+        # Bind the keypress event to the text widget
+        self.master.bind("<Control-plus>", lambda event: self.increase_font_size())
+        self.master.bind("<Control-minus>", lambda event: self.decrease_font_size())
+        self.master.bind("<Control-s>", lambda event: self.save_file())
+        self.master.bind("<Control-o>", lambda event: self.open_file())
+        self.master.bind("<Control-e>", lambda event: self.close_tab())
 
     def add_tab(self):
         text_widget = tk.Text(self.tabs)
-        text_widget.configure(font=("Arial", 12))
         self.tabs.add(text_widget, text="Untitled")
         self.tabs.select(text_widget)
 
@@ -73,7 +76,7 @@ class NotepadApp:
             text_widget.insert("1.0", text)
             text_widget.file_path = file_path
             file_name = os.path.basename(file_path)
-            self.tabs.add(text_widget, text=file_name)
+            self.tabs.add(text_widget, text=os.path.splitext(file_name)[0])
             self.tabs.select(text_widget)
 
     def save_file(self):
@@ -110,9 +113,6 @@ class NotepadApp:
         font_tuple = tkFont.Font(font=text_widget['font'])
         new_font_size = max(font_tuple.actual()["size"] - 1, 1)
         text_widget.configure(font=(font_tuple.actual()["family"], new_font_size))
-
-
-
     
 def main():
     root = tk.Tk()
